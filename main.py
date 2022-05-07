@@ -1,22 +1,24 @@
-from modules.Game import Game, clear
-import random
+from modules.Game import Game
+from modules.Interface import Interface
+from random import choice
 
 
 def main():
-    clear()
-    size = int(input("Square length: "))
+    
+    interface = Interface()
+
+    size = int(interface.my_input("Square length: "))
 
     first_player = ['me', 'bot']
-    game = Game(size, random.choice(first_player))
+
+    game = Game(size, choice(first_player))
 
     game.get_coords()
 
-    while game.is_continue():
-        game.print_tables()
-        print("в доработке, но у бота генерируются корабли сами")
-        break
-        new_hit = input("Your step: ")
-        game.move(new_hit)
+    game.set_shots()
+
+    game.winner()
+
 
 
 if __name__ == "__main__":

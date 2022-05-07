@@ -8,12 +8,16 @@ from modules.Ceil import Ceil
 class Field:
 
     LETTERS: str = string.ascii_uppercase
-    _ships: List[Ship] = [Ship(1)] * 4 + [Ship(2)] * 3 + [Ship(3)] * 2 + [Ship(4)]
 
     def __init__(self, size: int):
         self._size: int = size
         self._field: List[Ceil] = [Ceil(size, i) for i in range(size ** 2)]
         self.LETTERS = self.LETTERS[:size]
+        self._ships = [Ship(1) for i in range(4)] + \
+                        [Ship(2) for i in range(3)] + \
+                        [Ship(3) for i in range(2)] + \
+                        [Ship(4)]
+
 
     def is_ceil_for_new_ship(self, ceil_index: int) -> bool:
 
@@ -89,6 +93,10 @@ class Field:
             flags += 1
 
         return flags == 9
+
+
+    def get_ships(self) -> List[Ship]:
+        return self._ships
 
 
 class MyField(Field):
