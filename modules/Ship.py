@@ -2,18 +2,19 @@ class Ship:
 
     def __init__(self, size: int):
         self._size: int = size
-        self._hp: int = size
+        self.hp: int = size
 
     def set_coords(self, x: int, y: int, direction: str) -> None:
-        self._x = x
-        self._y = y
-        self._direction = direction
+        self.x = x
+        self.y = y
+        self.direction = direction
+
 
     def is_alive(self) -> bool:
-        return self._hp
+        return self.hp
 
     def get_damage(self) -> None:
-        self._hp -= 1
+        self.hp -= 1
 
     def size(self) -> int:
         return self._size
