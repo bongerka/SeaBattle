@@ -1,5 +1,4 @@
-from modules.Field import MyField, BotField
-from modules.Ship import Ship
+from modules.Field import Field
 from random import randint
 from typing import List
 import string
@@ -12,6 +11,8 @@ class Player:
         self.ships: List[Ship] = []
         self.field: list = []
         self.LETTERS: str = string.ascii_uppercase[:size]
+        self.field = Field(size)
+        self.ships: list = self.field.get_ships()
 
     def get_field(self) -> list:
         return self.field._field
@@ -20,46 +21,9 @@ class Player:
         return not any(ship.hp for ship in self.ships)
 
 
-class MyPlayer(Player):
-
-    def __init__(self, size: int):
-        super().__init__(size)
-        self.field = MyField(size)
-        self.ships: List[Ship] = self.field.get_ships()
-
     def add_ship(self, x: int, y: int, direction: str,
-                 ship_instance: Ship) -> bool:
+                 ship_instance) -> bool:
         return self.field.get_ship(x, y, direction, ship_instance)
-
-    def move(self) -> None:
-        is_miss: bool = True
-
-        while is_miss:
-            flag: bool = True
-
-            while flag:
-                x = randint(0, self._size - 1)
-                y = randint(0, self._size - 1)
-                shot_ceil = y * self._size + x
-
-                if not self.get_field()[shot_ceil].is_touched_ceil:
-                    flag = False
-
-            hit_ship: Ship = self.get_field()[shot_ceil].get_shot()
-
-            if hit_ship:
-                hit_ship.get_damage()
-
-            else:
-                is_miss = False
-
-
-class BotPlayer(Player):
-
-    def __init__(self, size: int):
-        super().__init__(size)
-        self.field = BotField(size)
-        self.ships: List[Ship] = self.field.get_ships()
 
     def move(self, hit: str):
         try:
