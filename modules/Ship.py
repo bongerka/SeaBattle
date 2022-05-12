@@ -11,7 +11,7 @@ class Ship:
 
 
     def is_alive(self) -> bool:
-        return self.hp
+        return self.hp > 0
 
     def get_damage(self) -> None:
         self.hp -= 1
