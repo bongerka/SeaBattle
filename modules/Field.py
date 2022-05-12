@@ -17,6 +17,7 @@ class Field:
                         [Ship(2) for i in range(3)] + \
                         [Ship(3) for i in range(2)] + \
                         [Ship(4)]
+        self.ships_sizes = self._ships.copy()
 
 
     def is_ceil_for_new_ship(self, ceil_index: int) -> bool:
@@ -97,13 +98,7 @@ class Field:
 
     def get_ships(self) -> List[Ship]:
         return self._ships
-
-
-class MyField(Field):
-
-    def __init__(self, size: int):
-        super().__init__(size)
-        self.ships_sizes = self._ships.copy()
+        
 
     def get_ship(self, x: int, y: int, direction: str,
                  ship_instance: Ship) -> bool:
@@ -179,110 +174,3 @@ class MyField(Field):
                 return True
 
         return False
-
-
-class BotField(Field):
-
-    def __init__(self, size: int):
-        super().__init__(size)
-        self._create_bot_field()
-
-    def _create_bot_field(self) -> None:
-        while True:
-
-            for ceil in self._field:
-                ceil.is_ship = False
-                ceil.contains_ship = None
-
-            count_of_iteration = 0
-            all_directions = ['left', 'right', 'up', 'down']
-            ships_sizes = self._ships.copy()
-
-            while ships_sizes:
-                current_ship = ships_sizes.pop()
-                current_ceil = random.randint(0, self._size ** 2 - 1)
-                current_direction = random.choice(all_directions)
-                count_of_iteration += 1
-                if count_of_iteration >= 100:
-                    break
-
-                if current_direction == 'left':
-                    if ((current_ceil % self._size) + 1 >= current_ship.size() and
-                        all(self.is_ceil_for_new_ship(i)
-                                    for i in range(current_ceil, current_ceil - current_ship.size(), -1))
-                        ):
-                        current_ship.set_coords(current_ceil % self._size,
-                                                current_ceil // self._size,
-                                                current_direction)
-
-                        for i in range(current_ship.size()):
-                            self._field[current_ceil].contains_ship = current_ship
-                            self._field[current_ceil].is_ship = True
-                            current_ceil -= 1
-
-                    else:
-                        ships_sizes.append(current_ship)
-
-                    continue
-
-                if current_direction == 'right':
-                    if (self._size - (current_ceil % self._size) >= current_ship.size() and
-                        all(self.is_ceil_for_new_ship(i)
-                                    for i in range(current_ceil, current_ceil + current_ship.size()))
-                        ):
-                        current_ship.set_coords(current_ceil % self._size,
-                                                current_ceil // self._size,
-                                                current_direction)
-
-                        for i in range(current_ship.size()):
-                            self._field[current_ceil].contains_ship = current_ship
-                            self._field[current_ceil].is_ship = True
-                            current_ceil += 1
-
-                    else:
-                        ships_sizes.append(current_ship)
-
-                    continue
-
-                if current_direction == 'up':
-                    if (current_ceil // self._size + 1 >= current_ship.size() and
-                        all(self.is_ceil_for_new_ship(i)
-                                    for i in range(current_ceil,
-                                                   current_ceil - self._size * current_ship.size(), -self._size))
-                        ):
-                        current_ship.set_coords(current_ceil % self._size,
-                                                current_ceil // self._size,
-                                                current_direction)
-
-                        for i in range(current_ship.size()):
-                            self._field[current_ceil].contains_ship = current_ship
-                            self._field[current_ceil].is_ship = True
-                            current_ceil -= self._size
-
-                    else:
-                        ships_sizes.append(current_ship)
-
-                    continue
-
-                if current_direction == 'down':
-                    if (self._size - current_ceil // self._size >= current_ship.size() and
-                        all(self.is_ceil_for_new_ship(i)
-                                    for i in range(current_ceil,
-                                                   current_ceil + self._size * current_ship.size(), self._size))
-                        ):
-                        current_ship.set_coords(current_ceil % self._size,
-                                                current_ceil // self._size,
-                                                current_direction)
-
-                        for i in range(current_ship.size()):
-                            self._field[current_ceil].contains_ship = current_ship
-                            self._field[current_ceil].is_ship = True
-                            current_ceil += self._size
-
-                    else:
-                        ships_sizes.append(current_ship)
-
-                    continue
-
-            if not ships_sizes:
-                break

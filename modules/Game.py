@@ -1,7 +1,7 @@
 import string
 from typing import Optional
-from modules.Player import MyPlayer, BotPlayer
-from modules.Interface import Interface, clear
+from modules.Player import Player
+from modules.Interface import Interface
 
 
 class Game:
@@ -11,87 +11,73 @@ class Game:
     def __init__(self, size: int, first_player: str):
         self.LETTERS: str = string.ascii_uppercase[:size]
         self._size: int = size
-        self.myPlayer = MyPlayer(size)
-        self.botPlayer = BotPlayer(size)
+        self.myplayer_1 = Player(size)
+        self.myplayer_2 = Player(size)
 
 
-    def print_tables(self) -> None:
-        CENTER: int = self._size * 3
-        clear()
-        self.interface.my_print('SEA BATTLE'.center(CENTER * 2))
+    def print_tables(self, player1: bool, player2: bool) -> None:
 
-        self.interface.my_print('MY TABLE'.center(CENTER) + 'OPPONENT'.center(CENTER))
+        my_ceils = [i.draw(player1) for i in self.myplayer_1.get_field()]
+        opp_ceils = [i.draw(player2) for i in self.myplayer_2.get_field()]
 
-        self.interface.my_print(" ".join(self.LETTERS).rjust(int(self._size * 2.5)) +
-                " ".join(self.LETTERS).rjust(int(self._size * 3)))
-
-        for i in range(0, self._size ** 2, self._size):
-            self.interface.my_print((f"{i // self._size + 1} " + 
-                " ".join(i.my_draw() 
-                    for i in self.myPlayer.get_field()[i:i+self._size])).rjust(int(self._size * 2.5)) +
-                (f"{i // self._size + 1} " + 
-                " ".join(i.bot_draw() 
-                    for i in self.botPlayer.get_field()[i:i+self._size])).rjust(int(self._size * 3)))
-
-        self.interface.my_print()
+        self.interface.print_tables(self.LETTERS, self._size, my_ceils, opp_ceils)
 
 
-    def get_coords(self) -> None:
+    def coord(self, player: Player, player1: bool, player2: bool):
         flag: bool = True
-        i = len(self.myPlayer.ships) - 1
+        i = len(player.ships) - 1
 
-        while(i >= 0):
+        while i >= 0:
 
-            self.print_tables()
-
-            self.interface.my_print("Enter your coordinates\nExample: rD5\n" + 
-                "r-right\nu-up\nd-down\nl-left\nD5 - start position\n*****************")
-
-            if not flag:
-                self.interface.my_print("wrong position for ship. Try again")
+            self.print_tables(player1, player2)
+            self.interface.draw_coords(flag)
 
             try:
-                coords = self.interface.my_input(f'{self.myPlayer.ships[i].size()}-deck ship: ')
+                coords = self.interface.take_coords(player.ships[i].size())
 
-                flag = self.myPlayer.add_ship(self.LETTERS.index(coords[1]) + 1,
+                flag = player.add_ship(self.LETTERS.index(coords[1]) + 1,
                                                 int(coords[2:]),
                                                 coords[0],
-                                                self.myPlayer.ships[i])
+                                                player.ships[i])
                 if not flag:
                     i += 1
 
             except:
                 i += 1
                 flag = False
-                
-            i -= 1
+
+            i -= 1      
+
+
+    def get_coords(self) -> None:
+        self.coord(self.myplayer_1, True, False)
+        self.coord(self.myplayer_2, False, True)
 
 
     def set_shots(self) -> None:
 
         while self._is_continue():
-            self.print_tables()
-            self.interface.my_print("*" * 40)
 
-            new_shot = self.interface.my_input("Enter coordinate you want to shot: ")
-            flags: bool = self.botPlayer.move(new_shot)
+            self.print_tables(True, False)
+
+            new_shot = self.interface.take_shot()
+            flags: bool = self.myplayer_2.move(new_shot)
 
             if not flags[0] or flags[1]:
                 continue
 
-            self.myPlayer.move()
+            self.print_tables(False, True)
+
+            new_shot = self.interface.take_shot()
+            flags: bool = self.myplayer_1.move(new_shot)
+
 
 
     def winner(self) -> None:
-        self.print_tables()
-
-        if self.myPlayer.is_lose():
-            self.interface.my_print("\nGAME IS OVER\nOPPONENT IS WINNER")
-
-        elif self.botPlayer.is_lose():
-            self.interface.my_print("\nGAME IS OVER\nYOU ARE WINNER")
+        self.print_tables(True, True)
+        self.interface.draw_winner(self.myplayer_1.is_lose(), self.myplayer_2.is_lose())
 
 
     def _is_continue(self) -> bool:
-        return not any((self.myPlayer.is_lose(),
-                        self.botPlayer.is_lose()))
+        return not any((self.myplayer_1.is_lose(),
+                        self.myplayer_2.is_lose()))

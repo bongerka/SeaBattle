@@ -17,10 +17,10 @@ class Ceil:
 
         self.is_miss = True
 
-        return None
+        return False
         
 
-    def my_draw(self) -> str:
+    def draw(self, visible: bool = True) -> str:
 
         if self.is_ship and not self.contains_ship.is_alive():
             return '✓'
@@ -31,21 +31,7 @@ class Ceil:
         if self.is_miss:
             return '·'
 
-        if self.is_ship and self.contains_ship.is_alive():
+        if visible and self.is_ship and self.contains_ship.is_alive():
             return '▣'
-
-        return '▢'
-
-
-    def bot_draw(self) -> str:
-
-        if self.is_ship and not self.contains_ship.is_alive():
-            return '✓'
-
-        if self.is_hit:
-            return '✘'
-
-        if self.is_miss:
-            return '·'
 
         return '▢'

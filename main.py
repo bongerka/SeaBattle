@@ -9,7 +9,7 @@ def main():
 
     size = int(interface.my_input("Square length: "))
 
-    first_player = ['me', 'bot']
+    first_player = ['1st', '2end']
 
     game = Game(size, choice(first_player))
 
